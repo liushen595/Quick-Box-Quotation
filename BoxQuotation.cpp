@@ -1,13 +1,18 @@
 #include <windows.h>
 #include <iostream>
 #include <chrono>
+#include <string>
+#include "lib/SystemTray.h"
+
 using namespace std::chrono;
 
 HHOOK hHook;
-bool isCtrlDown = false;  // 改为检测Ctrl键
+bool isCtrlDown = false;
 auto lastPressTime = steady_clock::now();
 bool toggleState = false;
+SystemTray* g_systemTray = nullptr;
 
+// 键盘钩子回调函数
 LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode == HC_ACTION) {
         KBDLLHOOKSTRUCT* p = (KBDLLHOOKSTRUCT*)lParam;
@@ -57,20 +62,35 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 }
 
 int main() {
+    // 初始化系统托盘
+    g_systemTray = new SystemTray();
     HINSTANCE hInstance = GetModuleHandle(NULL);
-    hHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, hInstance, 0);
 
-    if (!hHook) {
-        MessageBoxW(NULL, L"无法安装钩子", L"错误", MB_ICONERROR);
+    if (!g_systemTray->Initialize(hInstance)) {
         return 1;
     }
 
+    // 设置键盘钩子
+    hHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, hInstance, 0);
+    if (!hHook) {
+        SystemTray::ShowMessage(L"无法安装钩子", L"错误", MB_ICONERROR);
+        delete g_systemTray;
+        return 1;
+    }
+
+    // 隐藏控制台窗口
+    SystemTray::HideConsoleWindow();
+
+    // 消息循环
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
 
+    // 清理
     UnhookWindowsHookEx(hHook);
+    delete g_systemTray;
+
     return 0;
 }
