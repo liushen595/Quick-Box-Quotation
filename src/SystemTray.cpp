@@ -1,6 +1,7 @@
 // #define UNICODE
 // #define _UNICODE
 #include "../lib/SystemTray.h"
+#include "../resources/resource.h"
 
 // 初始化静态实例指针
 SystemTray* SystemTray::s_instance = nullptr;
@@ -129,8 +130,13 @@ void SystemTray::CreateTrayIcon() {
     m_nid.uID = 1;
     m_nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
     m_nid.uCallbackMessage = WM_TRAYICON;
-    m_nid.hIcon = LoadIcon(NULL, IDI_APPLICATION); // 使用默认图标，也可以加载自定义图标
-    lstrcpy(m_nid.szTip, L"键盘替换工具"); // 鼠标悬停提示文本
+    //加载托盘图标资源
+    m_nid.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_TRAY_ICON));
+    if (!m_nid.hIcon) {
+        m_nid.hIcon = LoadIcon(NULL, IDI_APPLICATION); // 如果加载失败，使用默认图标
+    }
+
+    lstrcpy(m_nid.szTip, L"快捷打出方框引号工具"); // 鼠标悬停提示文本
 
     Shell_NotifyIcon(NIM_ADD, &m_nid);
 }

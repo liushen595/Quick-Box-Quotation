@@ -4,6 +4,8 @@
 #include <string>
 #include "lib/SystemTray.h"
 
+#pragma comment(linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+
 using namespace std::chrono;
 
 HHOOK hHook;

@@ -1,0 +1,11 @@
+#include <windows.h>
+
+// 应用程序图标
+IDI_APP_ICON ICON "app_icon.ico"
+
+// 托盘图标资源
+IDI_TRAY_ICON ICON "app_icon.ico"
+
+// 资源标识符定义
+#define IDI_APP_ICON 101
+#define IDI_TRAY_ICON 102

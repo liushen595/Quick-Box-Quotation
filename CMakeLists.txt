@@ -21,6 +21,13 @@ set(SOURCE_FILES
     src/SystemTray.cpp
 )
 
+# 添加资源文件
+if(WIN32)
+    set(RESOURCE_FILES
+        resources/resources.rc
+    )
+endif()
+
 # 添加Windows特定设置
 if(WIN32)
     # 添加Windows库
@@ -32,7 +39,7 @@ if(WIN32)
 endif()
 
 # 创建可执行文件
-add_executable(BoxQuotation ${SOURCE_FILES})
+add_executable(BoxQuotation WIN32 ${SOURCE_FILES})
 
 # 链接Windows库
 if(WIN32)
